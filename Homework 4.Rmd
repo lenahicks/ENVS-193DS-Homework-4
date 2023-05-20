@@ -1,0 +1,40 @@
+---
+title: "Homework 4"
+author: "Lena Hicks"
+date: "May 20, 2023"
+output: html_document
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(tidyverse)
+library(lterdatasampler)
+library(here)
+
+library(performance)
+library(broom)
+library(ggeffects)
+library(ggmice)
+library(janitor)
+library(huxtable)
+
+```
+
+
+```{r}
+fish <- read_csv(
+  here("data", "ntl6_v12.csv")) 
+```
+
+```{r}
+trout_perch <- fish %>% 
+  clean_names() %>% 
+  filter( spname == "TROUTPERCH")
+```
+
