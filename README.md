@@ -3,6 +3,13 @@ Repo for ENVS 193DS Homework 4
 
 This README.txt file was generated on 2023-05-25 by Lena Hicks
 
+**DATA & FILE OVERVIEW**
+
+1\. The rendered document is [here](https://lenahicks.github.io/ENVS-193DS_homework-04_Hicks-Lena/Homework-4.html).
+
+2\.The metadata and complete downloadable data is found [here](https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-ntl.6.34)
+
+
 **GENERAL INFORMATION**
 
 1\. Title of Dataset: North Temperate Lakes LTER: Fish Lengths and Weights 1981 - current
@@ -37,54 +44,11 @@ Rise of a native apex predator and an invasive zooplankton cause successive ecol
 
 3\. Recommended citation for this dataset: Magnuson, J.J., S.R. Carpenter, and E.H. Stanley. 2022. North Temperate Lakes LTER: Fish Lengths and Weights 1981 - current ver 34. Environmental Data Initiative. https://doi.org/10.6073/pasta/968299a53784f9649eb67f421cc33340 (Accessed 2023-05-25).
 
-**DATA & FILE OVERVIEW**
-
-1\. File List: \<list all files (or folders, as appropriate for dataset
-organization) contained in the dataset, with a brief description\>
-
-2\. Relationship between files, if important:
-
-3\. Additional related data collected that was not included in the
-current data package:
-
-4\. Are there multiple versions of the dataset? yes/no A. If yes, name
-of file(s) that was updated: i. Why was the file updated? ii. When was
-the file updated?
-
 **METHODOLOGICAL INFORMATION**
 
-1\. Description of methods used for collection/generation of data:
-\<Include links or references to publications or other documentation
-containing experimental design or protocols used in data collection\>
+1\. Eleven lakes within the North Temperate Lakes were accessed via boat and fish were recorded via tramp nets; fish type varied, but evaluted here was Trout Perch. Measurments on length, weight, sex, etc. were taken, but only length and weight were evaluted here. 
 
-2\. Methods for processing the data: \<describe how the submitted data
-were generated from the raw or collected data\>
+2\.  Instrument- or software-specific information needed to interpret the
+data: The package "lterdatasampler" is paired with the data package and required for analysis in R, otherwise packages are dependent on variables and conditions of interest and related analysis.
 
-3\. Instrument- or software-specific information needed to interpret the
-data: \<include full name and version of software, and any necessary
-packages or libraries needed to run scripts\>
-
-4\. Standards and calibration information, if appropriate:
-
-5\. Environmental/experimental conditions:
-
-6\. Describe any quality-assurance procedures performed on the data:
-
-7\. People involved with sample collection, processing, analysis and/or
-submission:
-
-**DATA-SPECIFIC INFORMATION FOR:** 
-
-\[FILENAME\] \<repeat this section for
-each dataset, folder or file, as appropriate\>
-
-1\. Number of variables:
-
-2\. Number of cases/rows:
-
-3\. Variable List: \<list variable name(s), description(s), unit(s)and
-value labels as appropriate for each\>
-
-4\. Missing data codes: \<list code/symbol and definition\>n
-
-5\. Specialized formats or other abbreviations used:
+3\. Data analysis used linear regression modeling to evalute the relationship between fish weight and length.
