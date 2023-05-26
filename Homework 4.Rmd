@@ -3,20 +3,19 @@ title: "Homework 4"
 author: "Lena Hicks"
 date: "May 20, 2023"
 output: html_document
-execute:
-  warning: false
-  message: false
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning =FALSE)
 ```
 
+## Set Up
+
 ```{r libraries}
+#loading in all necessary packages for intented uses
 library(tidyverse)
 library(lterdatasampler)
 library(here)
-
 library(performance)
 library(broom)
 library(ggeffects)
@@ -25,16 +24,133 @@ library(janitor)
 library(huxtable)
 
 ```
+### Loading data in
 
-
-```{r}
+```{r loading-data}
+#loading in data, located using here package
 fish <- read_csv(
   here("data", "ntl6_v12.csv")) 
 ```
 
-```{r}
+### Filtering data
+
+```{r filtering-data}
+#filtering data so as specific to our research question, and cleaning columns up
 trout_perch <- fish %>% 
   clean_names() %>% 
-  filter( spname == "TROUTPERCH")
+  filter( spname == "TROUTPERCH") 
 ```
 
+
+# Problem 1
+
+1. For the null, Trout Perch fish length does not predict the weight of the fish over all years. Alternatively, Trout Perch fish length does predict fish weight over all the sample years.
+Mathmatical:
+H0: β1 = 0 [there is no linear relationship between trout perch length and weight]
+HA: β1 =/= 0 [there is a linear relationship between trout perch length and weight]
+
+2.
+```{r visualizing-missing-data}
+plot_pattern(trout_perch)
+```
+
+Of the missing data from this data set, there are 199 missing entries from the Weight column, which is a distinct amount of missing entries for one of the main variables we are interested in. While interpreting the data to come, it must be noted that it will not be an entirely accurate view of the relationship between length and weight with so many missing entries from weight.
+
+3. 
+```{r linear-test}
+#testing for linear relationship between variables using exploratory data visualization; looks linear!
+ggplot(data = trout_perch, aes(x = length, y = weight)) +
+  geom_point()
+
+#running our test of looking at the linear model for the response, weight, to the predictor, length
+trout_model <- lm(formula = weight ~ length, data = trout_perch)
+
+#looking at the resulting linear model
+trout_model
+```
+
+
+4. 
+```{r checking-assumptions-visually}
+#creating the diagnostic plots in a 2x2 format plot grid based off the linear model to check assumptions
+par(mfrow = c(2, 2))
+plot(trout_model)
+```
+
+```{r grid-off}
+#turning off 2x2 grid
+dev.off()
+```
+
+
+5. Diagnostic Plots Analysis
+Residuals vs Fitted: This plot is allowing us to check the homoskedasticity of errors; the fitted line is pretty flat, and the points appear randomly evenly distributed, so we are deciding it is homoskedastic.
+Scale-Location: We are also evaluating homoskedasticity with this plot, and we continue to decide that it's homoskedastic based upon the close-to-flat line and balanced error point distribution.
+Normal Q-Q: Here we are looking at normally distributed errors, which based off this plot, the errors appear normally distributed since most of the points align with the line of normality.
+Residuals vs Leverage: This plot allows us to see if there's any outliers that are significant enough to affect the linear regression based off cook's distance, and in this case there is one outlier(226) outside of cook's distance that is significant to the model.
+
+6. 
+```{r model-summary}
+#summary statistics of trout perch model
+model_summary <- summary(trout_model)
+
+#anova table of trout perch model
+model_squares <- anova(trout_model)
+
+#printing summary statistics
+model_summary
+```
+
+
+7. 
+```{r}
+#dont name code chunk when making a table in the chunk for rendering
+
+model_squares_table <- tidy(model_squares) %>%   
+  #telling us if the p-value is below a certain level but not having to go into more detail than that
+  mutate(p.value = case_when(p.value < 0.001 ~ "<0.001")) %>% 
+  #using huxtable as alternative to flextable 
+  as_hux() %>% 
+  #Making meaningful column names and row names using huxtable function
+  set_markdown_contents(1, 1, "Terms") %>% 
+  set_markdown_contents(1, 2, "Degrees of Freedom") %>% 
+  set_markdown_contents(1, 3, "Sum of Squares")%>% 
+  set_markdown_contents(1,4, "Mean of Squares") %>% 
+  set_markdown_contents(1,5, "F Statistic") %>% 
+  set_markdown_contents(1,6, "P-Value") %>% 
+  set_markdown_contents(2,1, "Length")
+
+#printing table  
+model_squares_table
+```
+
+8. The anova table takes the relevant information from the summary() object about degrees of
+freedom, test statistic, p-value, and R2, and it tells you where they come from - the sum of squares, mean of squares, etc. 
+
+
+9. From the linear regression tests, the relationship between fish length as the predictor to fish weight for Trout Perch was determined to be y = 0.120x - 11.702 with an R-squared value of 0.8164, indicating that for every 1mm increase in fish length, there is an average 0.12 oz. increase in fish weight. This supports the alternative hypothesis, and with a p-value far less than 0.001, we decide to reject the null. The value of R-squared is closer to 1, indicating the value of the dependent variable is fairly predictable given a value of the independent variable, but likely the large amounts of missing data and signifcant outlier may have had an effect on it not being even closer to one.
+
+10. 
+```{r prediction-plot}
+#creating model predictions
+predictions <- ggpredict(trout_model, terms = "length")
+
+plot_predictions <- ggplot(data = trout_perch, aes(x = length, y = weight)) +
+  # first plot the underlying data
+  geom_point() +
+  # plotting model predictions from the `predictions` object from ggeffects
+  geom_line(data = predictions, aes(x = x, y = predicted), color = "blue", linewidth = 1) +
+  # plot the confidence interval around model estimates
+  geom_ribbon(data = predictions, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+  theme(
+    #choosing font
+    text = element_text(family = "Times New Roman"),
+    #adjusting title font size and centering title
+    plot.title = element_text(size = 14, hjust = 0.5),
+    #adjusting caption font size and centering caption
+    plot.caption = element_text(size = 10, hjust = 0.5))+
+  labs(title = "The Effect of Fish Length on Fish Weight for Trout Perch Fish\n in North Temperate Lakes Over All Sample Years", x = "Length(mm)", y = "Weight(oz)", caption = "The observed relationship between fish length and fish weight for Trout Perch in North Temperate Lakes,\n displaying a linear relationship of y = 0.120x - 11.702 with an R-squared value of 0.8164. Paired with the\n line are the confidence intervals, indicating the upper and lower ranges of confidence in this linear fit.") 
+  
+#printing plot
+plot_predictions
+```
